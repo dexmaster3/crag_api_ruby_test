@@ -26,6 +26,7 @@ require 'rspec/rails'
 # If you are not using ActiveRecord, you can remove this line.
 ActiveRecord::Migration.maintain_test_schema!
 
+Dir[Rails.root.join('spec/support/**/*.rb')].each { |f| require f }
 
 # require database cleaner at the top level
 require 'database_cleaner'
@@ -44,6 +45,8 @@ RSpec.configure do |config|
   # [...]
   # add `FactoryGirl` methods
   config.include FactoryGirl::Syntax::Methods
+
+  config.include RequestSpecHelper, type: :request
 
   # start by truncating all the tables but then use the faster transaction strategy the rest of the time.
   config.before(:suite) do
