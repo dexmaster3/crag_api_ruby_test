@@ -20,7 +20,7 @@ RSpec.describe 'Crags API', type: :request do
 
   # Test for GET /crags/:id
   describe 'GET /crags/:id' do
-    before {get "crags/#{crag_id}"}
+    before {get "/crags/#{crag_id}"}
 
     context 'when the record exists' do
       it 'returns the crag' do
@@ -87,7 +87,7 @@ RSpec.describe 'Crags API', type: :request do
       end
 
       it 'returns status code 204' do
-        expect(response).to have_http-status(204)
+        expect(response).to have_http_status(204)
       end
     end
   end
