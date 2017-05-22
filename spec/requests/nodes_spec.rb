@@ -6,10 +6,11 @@ RSpec.describe 'Nodes API' do
   let!(:nodes) { create_list(:node, 20, crag_id: crag.id) }
   let(:crag_id) { crag.id }
   let(:id) { nodes.first.id }
+  let(:headers) { valid_headers }
 
   # Test suite for GET /crags/:crag_id/nodes
   describe 'GET /crags/:crag_id/nodes' do
-    before { get "/crags/#{crag_id}/nodes" }
+    before { get "/crags/#{crag_id}/nodes", params: {}, headers: headers}
 
     context 'when crag exists' do
       it 'returns status code 200' do
@@ -36,7 +37,7 @@ RSpec.describe 'Nodes API' do
 
   # Test suite for GET /crags/:crag_id/nodes/:id
   describe 'GET /crags/:crag_id/nodes/:id' do
-    before { get "/crags/#{crag_id}/nodes/#{id}" }
+    before { get "/crags/#{crag_id}/nodes/#{id}", params: {}, headers: headers}
 
     context 'when crag node exists' do
       it 'returns status code 200' do
@@ -61,12 +62,14 @@ RSpec.describe 'Nodes API' do
     end
   end
 
-  # Test suite for PUT /crags/:crag_id/nodes
+  # Test suite for POST /crags/:crag_id/nodes
   describe 'POST /crags/:crag_id/nodes' do
-    let(:valid_attributes) { { weight: 34, xcoord: 394.44 } }
+    let(:valid_attributes) { { weight: 34, xcoord: 394.44 }.to_json}
 
     context 'when request attributes are valid' do
-      before { post "/crags/#{crag_id}/nodes", params: valid_attributes }
+      before do
+        post "/crags/#{crag_id}/nodes", params: valid_attributes, headers: headers
+      end
 
       it 'returns status code 201' do
         expect(response).to have_http_status(201)
@@ -88,9 +91,11 @@ RSpec.describe 'Nodes API' do
 
   # Test suite for PUT /crags/:crag_id/nodes/:id
   describe 'PUT /crags/:crag_id/nodes/:id' do
-    let(:valid_attributes) { { xcoord: 46.473 } }
+    let(:valid_attributes) { { xcoord: 46.473 }.to_json}
 
-    before { put "/crags/#{crag_id}/nodes/#{id}", params: valid_attributes }
+    before do
+      put "/crags/#{crag_id}/nodes/#{id}", params: valid_attributes, headers: headers
+    end
 
     context 'when node exists' do
       it 'returns status code 204' do
@@ -118,7 +123,7 @@ RSpec.describe 'Nodes API' do
 
   # Test suite for DELETE /crags/:id
   describe 'DELETE /crags/:id' do
-    before { delete "/crags/#{crag_id}/nodes/#{id}" }
+    before { delete "/crags/#{crag_id}/nodes/#{id}", params: {}, headers: headers}
 
     it 'returns status code 204' do
       expect(response).to have_http_status(204)

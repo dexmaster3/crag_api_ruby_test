@@ -3,13 +3,13 @@ class CragsController < ApplicationController
 
   # GET /crags
   def index
-    @crags = Crag.all
+    @crags = current_user.crags
     json_response(@crags)
   end
 
   # POST /crags
   def create
-    @crag = Crag.create!(crag_params)
+    @crag = current_user.crags.create!(crag_params)
     json_response(@crag, :created)
   end
 
@@ -34,7 +34,7 @@ class CragsController < ApplicationController
 
   def crag_params
     # whitelist params
-    params.permit(:title, :created_by)
+    params.permit(:title)
   end
 
   def set_crag

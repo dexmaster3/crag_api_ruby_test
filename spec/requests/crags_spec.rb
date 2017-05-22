@@ -1,12 +1,14 @@
 require 'rails_helper'
 
 RSpec.describe 'Crags API', type: :request do
-  let!(:crags) { create_list(:crag, 10) }
-  let(:crag_id) { crags.first.id }
+  let(:user) {create(:user)}
+  let!(:crags) {create_list(:crag, 10, created_by: user.id)}
+  let(:crag_id) {crags.first.id}
+  let(:headers) {valid_headers}
 
   # Test got GET /crags
   describe 'GET /crags' do
-    before { get '/crags' }
+    before {get '/crags', params: {}, headers: headers}
     it 'returns crags' do
       expect(json).not_to be_empty
       expect(json.size).to eq(10)
@@ -20,7 +22,7 @@ RSpec.describe 'Crags API', type: :request do
 
   # Test for GET /crags/:id
   describe 'GET /crags/:id' do
-    before {get "/crags/#{crag_id}"}
+    before {get "/crags/#{crag_id}", params: {}, headers: headers}
 
     context 'when the record exists' do
       it 'returns the crag' do
@@ -48,10 +50,12 @@ RSpec.describe 'Crags API', type: :request do
 
   # Test for POST /crags
   describe 'POST /crags' do
-    let(:valid_attributes) { {title: 'Test Main Crag', created_by: '1' } }
+    let(:valid_attributes) do
+      {title: 'Test Main Crag', created_by: user.id.to_s}.to_json
+    end
 
     context 'when the request is valid' do
-      before { post '/crags', params: valid_attributes }
+      before {post '/crags', params: valid_attributes, headers: headers}
 
       it 'creates a crag' do
         expect(json['title']).to eq('Test Main Crag')
@@ -63,7 +67,8 @@ RSpec.describe 'Crags API', type: :request do
     end
 
     context 'when the request is invalid' do
-      before { post '/crags', params: {title: 'Badcrag'}}
+      let(:valid_attributes) {{title: nil}.to_json}
+      before {post '/crags', params: valid_attributes, headers: headers}
 
       it 'returns status code 422' do
         expect(response).to have_http_status(422)
@@ -77,10 +82,10 @@ RSpec.describe 'Crags API', type: :request do
 
   # Test for PUT /crags/:id
   describe 'PUT /crags/:id' do
-    let(:valid_attributes) { { title: 'Great Crag'} }
+    let(:valid_attributes) {{title: 'Great Crag'}.to_json}
 
     context 'when the record exists' do
-      before { put "/crags/#{crag_id}", params: valid_attributes}
+      before {put "/crags/#{crag_id}", params: valid_attributes, headers: headers}
 
       it 'updates the record' do
         expect(response.body).to be_empty
@@ -94,7 +99,7 @@ RSpec.describe 'Crags API', type: :request do
 
   # Test for DELETE /crags/:id
   describe 'DELETE /crags/:id' do
-    before { delete "/crags/#{crag_id}"}
+    before {delete "/crags/#{crag_id}", params: {}, headers: headers}
 
     it 'returns status code 204' do
       expect(response).to have_http_status(204)
